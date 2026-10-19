@@ -1,0 +1,396 @@
+
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>StudyNest AI - MultiMedia Assistant</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: #f8fafc;
+  min-height: 100vh;
+}
+
+header {
+  background: #111c30;
+  padding: 20px 14px;
+  text-align: center;
+  border-bottom: 1px solid #29364b;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  color: #5eead4;
+  font-size: 27px;
+}
+
+header p {
+  margin: 5px 0;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  background: #163b3a;
+  color: #5eead4;
+  border-radius: 20px;
+  padding: 7px 12px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 16px;
+}
+
+.card {
+  background: #111c30;
+  border: 1px solid #29364b;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 0;
+  color: #5eead4;
+}
+
+#chat {
+  min-height: 230px;
+  max-height: 48vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bot {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.user {
+  background: #115e59;
+  align-self: flex-start;
+  max-width: 90%;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 16px;
+  color: white;
+  background: #0b1220;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #5eead4;
+}
+
+button {
+  border: none;
+  border-radius: 11px;
+  padding: 12px 14px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.primary {
+  background: #5eead4;
+  color: #102027;
+}
+
+.secondary {
+  background: #26364d;
+  color: white;
+  border: 1px solid #475569;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.buttons button {
+  flex: 1 1 120px;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.subjects button {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+.note {
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.9;
+}
+
+footer {
+  text-align: center;
+  padding: 20px 10px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📚 StudyNest AI</h1>
+  <p>ملٹی میڈیا اسٹڈی اسسٹنٹ</p>
+  <p>Created by: Muzamil Sahu / مزمل سہو</p>
+  <span class="badge">AI Connection Ready • API Key محفوظ</span>
+</header>
+
+<main>
+
+  <section class="card">
+    <h2>💬 اپنا سوال پوچھیں</h2>
+
+    <div id="chat" aria-live="polite">
+      <div class="message bot">السلام علیکم! 👋
+
+میں StudyNest AI ہوں۔
+
+آپ اردو یا انگریزی میں اپنا سوال لکھ سکتے ہیں۔ ابھی یہ ڈیمو ورژن ہے؛ حقیقی AI کے لیے محفوظ سرور جوڑنا ضروری ہے۔</div>
+    </div>
+
+    <textarea id="question"
+      placeholder="اپنا سوال یہاں لکھیں..."
+      aria-label="اپنا سوال لکھیں"></textarea>
+
+    <div class="buttons">
+      <button class="primary" id="sendBtn" onclick="sendQuestion()">
+        جواب حاصل کریں ➤
+      </button>
+
+      <button class="secondary" onclick="startVoice()">
+        🎤 بول کر پوچھیں
+      </button>
+
+      <button class="secondary" onclick="speakAnswer()">
+        🔊 جواب سنیں
+      </button>
+    </div>
+
+    <p class="note" id="status">
+      حالت: ڈیمو موڈ — حقیقی AI ابھی منسلک نہیں۔
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>📖 مضمون منتخب کریں</h2>
+    <div class="subjects">
+      <button onclick="setQuestion('پاکستان کا دارالحکومت کیا ہے؟')">پاکستان اسٹڈیز</button>
+      <button onclick="setQuestion('175 - 50 حل کریں اور طریقہ سمجھائیں۔')">ریاضی</button>
+      <button onclick="setQuestion('Explain photosynthesis in simple English.')">سائنس</button>
+      <button onclick="setQuestion('Explain a Python variable with an example.')">کمپیوٹر</button>
+      <button onclick="setQuestion('اس جملے کا انگریزی ترجمہ کریں: میں طالب علم ہوں۔')">انگریزی</button>
+      <button onclick="setQuestion('اردو میں اسم کی تعریف اور مثالیں بتائیں۔')">اردو</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🔐 حقیقی AI کنکشن</h2>
+    <p class="note">
+      یہ فائل مستقبل میں حقیقی AI سے جڑنے کے لیے تیار کی گئی ہے۔
+      فی الحال اس میں صرف ڈیمو جوابات ہیں۔
+      حقیقی AI کے لیے ایک محفوظ بیک اینڈ سرور درکار ہے۔
+      اپنی API Key اس HTML فائل یا عوامی GitHub ریپوزٹری میں مت ڈالیں۔
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  StudyNest AI © 2026<br>
+  تعلیم سب کے لیے 💚
+</footer>
+
+<script>
+const chat = document.getElementById("chat");
+const questionInput = document.getElementById("question");
+const statusText = document.getElementById("status");
+const sendBtn = document.getElementById("sendBtn");
+
+let lastAnswer = "";
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function setQuestion(text) {
+  questionInput.value = text;
+  questionInput.focus();
+}
+
+function demoAnswer(question) {
+  const q = question.toLowerCase().trim();
+
+  if (
+    q.includes("دارالحکومت") ||
+    q.includes("capital of pakistan") ||
+    q.includes("capital pakistan")
+  ) {
+    return "پاکستان کا دارالحکومت اسلام آباد ہے۔";
+  }
+
+  if (q.includes("175") && (q.includes("50") || q.includes("minus"))) {
+    return "حل:\n175 - 50 = 125\n\nطریقہ: 175 میں سے 5 نکالیں تو 170 رہتا ہے، پھر 45 نکالیں تو 125 رہتا ہے۔";
+  }
+
+  if (q.includes("photosynthesis")) {
+    return "Photosynthesis is the process by which green plants use sunlight, water, and carbon dioxide to make food. Oxygen is released during this process.";
+  }
+
+  if (q.includes("python") && q.includes("variable")) {
+    return 'A variable stores a value.\nExample:\nname = "Muzamil"\nprint(name)\n\nOutput: Muzamil';
+  }
+
+  if (q.includes("میں طالب علم ہوں") || q.includes("i am a student")) {
+    return "انگریزی ترجمہ: I am a student.";
+  }
+
+  if (q.includes("اسم کی تعریف") || q.includes("اسم")) {
+    return "اسم کسی شخص، جگہ، چیز یا کیفیت کے نام کو کہتے ہیں۔\nمثالیں: علی، لاہور، کتاب، خوشی۔";
+  }
+
+  return "یہ ابھی StudyNest AI کا ڈیمو موڈ ہے۔ اس سوال کے لیے حقیقی AI جواب حاصل کرنے کی خاطر محفوظ AI سرور منسلک کرنا ہوگا۔ اس ورژن میں آپ کے سوالات خودکار طور پر کسی AI سروس کو نہیں بھیجے جاتے۔";
+}
+
+async function sendQuestion() {
+  const question = questionInput.value.trim();
+
+  if (!question) {
+    statusText.textContent = "براہ کرم پہلے اپنا سوال لکھیں۔";
+    questionInput.focus();
+    return;
+  }
+
+  addMessage(question, "user");
+  questionInput.value = "";
+  sendBtn.disabled = true;
+  statusText.textContent = "ڈیمو جواب تیار کیا جا رہا ہے...";
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 350));
+    lastAnswer = demoAnswer(question);
+    addMessage(lastAnswer, "bot");
+    statusText.textContent = "ڈیمو جواب موصول ہوگیا۔ حقیقی AI منسلک نہیں۔";
+  } catch (error) {
+    lastAnswer = "معذرت، جواب تیار نہیں ہو سکا۔";
+    addMessage(lastAnswer, "bot");
+    statusText.textContent = "ایک مسئلہ پیش آیا۔";
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    statusText.textContent =
+      "آپ کے براؤزر میں آواز سے سوال پوچھنے کی سہولت دستیاب نہیں۔ Chrome میں کوشش کریں۔";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "ur-PK";
+  recognition.interimResults = false;
+
+  statusText.textContent = "اب بولیں، آپ کا سوال سنا جا رہا ہے...";
+
+  recognition.onresult = function(event) {
+    questionInput.value = event.results[0][0].transcript;
+    statusText.textContent = "سوال لکھ دیا گیا ہے۔ جواب حاصل کریں دبائیں۔";
+  };
+
+  recognition.onerror = function() {
+    statusText.textContent =
+      "آواز نہیں سنی جا سکی۔ مائیک کی اجازت اور انٹرنیٹ چیک کریں۔";
+  };
+
+  recognition.start();
+}
+
+function speakAnswer() {
+  if (!lastAnswer) {
+    statusText.textContent = "پہلے کوئی جواب حاصل کریں۔";
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    statusText.textContent =
+      "آپ کے براؤزر میں جواب سنانے کی سہولت دستیاب نہیں۔";
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(lastAnswer);
+  utterance.lang = /[؀-ۿ]/.test(lastAnswer) ? "ur-PK" : "en-US";
+  utterance.rate = 0.9;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+questionInput.addEventListener("keydown", function(event) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendQuestion();
+  }
+});
+</script>
+
+</body>
+</html>
